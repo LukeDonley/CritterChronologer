@@ -1,5 +1,10 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.user.data.CustomerDTO;
+import com.udacity.jdnd.course3.critter.user.data.CustomerData;
+import com.udacity.jdnd.course3.critter.user.data.EmployeeDTO;
+import com.udacity.jdnd.course3.critter.user.data.EmployeeRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -16,14 +21,19 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
 
+    @Autowired
+    CustomerService customerService;
+
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-        throw new UnsupportedOperationException();
+        CustomerData newCustomer = customerService.saveCustomer(customerDTO);
+        customerDTO.setId(newCustomer.getId());
+        return customerDTO;
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
-        throw new UnsupportedOperationException();
+        return customerService.getAllCustomers();
     }
 
     @GetMapping("/customer/pet/{petId}")
