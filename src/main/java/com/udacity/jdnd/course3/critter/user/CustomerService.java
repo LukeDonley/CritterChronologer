@@ -1,6 +1,7 @@
 package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.pet.data.PetData;
+import com.udacity.jdnd.course3.critter.pet.data.PetRepository;
 import com.udacity.jdnd.course3.critter.user.data.CustomerDTO;
 import com.udacity.jdnd.course3.critter.user.data.CustomerData;
 import com.udacity.jdnd.course3.critter.user.data.CustomerRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,11 +18,18 @@ public class CustomerService {
     @Autowired
     CustomerRepository customerRepository;
 
-    public CustomerData saveCustomer(CustomerDTO customer) {
-        CustomerData newCustomer = new CustomerData();
-        newCustomer.setName(customer.getName());
-        newCustomer.setPhoneNumber(customer.getPhoneNumber());
-        return customerRepository.save(newCustomer);
+    @Autowired
+    PetRepository petRepository;
+
+    public CustomerDTO createCustomer(CustomerDTO customerDTO) {
+        CustomerData newCustomer = new CustomerData(
+                customerDTO.getName(),
+                customerDTO.getPhoneNumber(),
+                customerDTO.getNotes()
+        );
+        newCustomer = customerRepository.save(newCustomer);
+        customerDTO.setId(newCustomer.getId());
+        return customerDTO;
     }
 
     public List<CustomerDTO> getAllCustomers() {
@@ -42,5 +51,14 @@ public class CustomerService {
         customerDTO.setPetIds(petIds);
 
         return customerDTO;
+    }
+
+    public CustomerDTO getOwnerByPet(long petId) {
+        Optional<PetData> pet = petRepository.findById(petId);
+        if (pet.get() != null) {
+            return createDTO(pet.get().getCustomer());
+        } else {
+            return null;
+        }
     }
 }

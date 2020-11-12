@@ -1,7 +1,6 @@
 package com.udacity.jdnd.course3.critter.pet;
 
 import com.udacity.jdnd.course3.critter.pet.data.PetDTO;
-import com.udacity.jdnd.course3.critter.pet.data.PetData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,27 +18,21 @@ public class PetController {
 
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
-        PetData newPet = new PetData();
-        newPet.setType(petDTO.getType());
-        newPet.setName(petDTO.getName());
-        newPet.setBirthDate(petDTO.getBirthDate());
-        newPet.setNotes(petDTO.getNotes());
-        petService.savePet(newPet, petDTO.getOwnerId());
-        return petDTO;
+        return petService.createPet(petDTO);
     }
 
     @GetMapping("/{petId}")
     public PetDTO getPet(@PathVariable long petId) {
-        throw new UnsupportedOperationException();
+        return petService.getPet(petId);
     }
 
     @GetMapping
     public List<PetDTO> getPets(){
-        throw new UnsupportedOperationException();
+        return petService.getAllPets();
     }
 
     @GetMapping("/owner/{ownerId}")
     public List<PetDTO> getPetsByOwner(@PathVariable long ownerId) {
-        throw new UnsupportedOperationException();
+        return petService.getPetsByOwner(ownerId);
     }
 }

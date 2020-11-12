@@ -5,24 +5,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
-@Data
 @Entity
-@Table(name = "customers")
+@Table
+@Data
 @NoArgsConstructor
-public class CustomerData {
+public class CustomerData implements Serializable {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
     private String name;
     private String phoneNumber;
     private String notes;
     @OneToMany(targetEntity = PetData.class)
     private List<PetData> pets;
 
-    public void addPet(PetData pet) {
-        pets.add(pet);
+    public CustomerData(String name, String phoneNumber, String notes) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.notes = notes;
     }
-
 }

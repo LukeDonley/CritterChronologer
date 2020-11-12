@@ -96,12 +96,15 @@ public class CritterFunctionalTest {
         CustomerDTO customerDTO = createCustomerDTO();
         CustomerDTO newCustomer = userController.saveCustomer(customerDTO);
 
-        PetDTO petDTO = createPetDTO();
-        petDTO.setOwnerId(newCustomer.getId());
-        PetDTO newPet = petController.savePet(petDTO);
-        petDTO.setType(PetType.DOG);
-        petDTO.setName("DogName");
-        PetDTO newPet2 = petController.savePet(petDTO);
+        PetDTO firstPetDTO = createPetDTO();
+        firstPetDTO.setOwnerId(newCustomer.getId());
+        PetDTO newPet = petController.savePet(firstPetDTO);
+
+        PetDTO secondPetDTO = createPetDTO();
+        secondPetDTO.setOwnerId(newCustomer.getId());
+        secondPetDTO.setType(PetType.DOG);
+        secondPetDTO.setName("DogName");
+        PetDTO newPet2 = petController.savePet(secondPetDTO);
 
         List<PetDTO> pets = petController.getPetsByOwner(newCustomer.getId());
         Assertions.assertEquals(pets.size(), 2);
@@ -188,7 +191,7 @@ public class CritterFunctionalTest {
         List<Long> employeeList = Lists.newArrayList(employeeDTO.getId());
         Set<EmployeeSkill> skillSet =  Sets.newHashSet(EmployeeSkill.PETTING);
 
-        scheduleController.createSchedule(createScheduleDTO(petList, employeeList, date, skillSet));
+        ScheduleDTO newSchedule = scheduleController.createSchedule(createScheduleDTO(petList, employeeList, date, skillSet));
         ScheduleDTO scheduleDTO = scheduleController.getAllSchedules().get(0);
 
         Assertions.assertEquals(scheduleDTO.getActivities(), skillSet);

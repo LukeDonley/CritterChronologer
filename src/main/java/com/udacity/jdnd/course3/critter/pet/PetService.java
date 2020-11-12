@@ -8,7 +8,9 @@ import com.udacity.jdnd.course3.critter.user.data.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PetService {
@@ -18,13 +20,26 @@ public class PetService {
     @Autowired
     CustomerRepository customerRepository;
 
-    public PetData savePet(PetData pet, Long customerId) {
-        CustomerData customer = customerRepository.getOne(customerId);
-        pet.setCustomer(customer);
-        pet = petRepository.save(pet);
-        customer.addPet(pet);
+    public PetDTO createPet(PetDTO petDTO) {
+        CustomerData customer = customerRepository.getOne(petDTO.getOwnerId());
+        PetData newPet = new PetData(
+                petDTO.getType(),
+                petDTO.getName(),
+                customer,
+                petDTO.getBirthDate(),
+                petDTO.getNotes()
+        );
+        newPet = petRepository.save(newPet);
+
+        List<PetData> customerPets = customer.getPets();
+        if (customerPets == null) {
+            customerPets = new ArrayList<PetData>();
+        }
+        customerPets.add(newPet);
+        customer.setPets(customerPets);
         customerRepository.save(customer);
-        return pet;
+        petDTO.setId(newPet.getId());
+        return petDTO;
     }
 
     public List<PetData> getPetsForCustomer(Long customerId) {
@@ -40,5 +55,19 @@ public class PetService {
         petDTO.setBirthDate(pet.getBirthDate());
         petDTO.setNotes(pet.getNotes());
         return petDTO;
+    }
+
+    public PetDTO getPet(long petId) {
+        return createDTO(petRepository.getOne(petId));
+    }
+
+    public List<PetDTO> getAllPets() {
+        List<PetData> pets = petRepository.findAll();
+        return pets.stream().map(this::createDTO).collect(Collectors.toList());
+    }
+
+    public List<PetDTO> getPetsByOwner(long ownerId) {
+        List<PetData> pets = customerRepository.getOne(ownerId).getPets();
+        return pets.stream().map(this::createDTO).collect(Collectors.toList());
     }
 }

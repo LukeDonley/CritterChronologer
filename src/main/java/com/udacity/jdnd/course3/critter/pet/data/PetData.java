@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@SequenceGenerator(name="seq", initialValue=1, allocationSize=100)
+@Table
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "pets")
 public class PetData {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "seq")
     private Long id;
     private PetType type;
     private String name;
@@ -21,4 +22,12 @@ public class PetData {
     private CustomerData customer;
     private LocalDate birthDate;
     private String notes;
+
+    public PetData(PetType type, String name, CustomerData customer, LocalDate birthDate, String notes) {
+        this.type = type;
+        this.name = name;
+        this.customer = customer;
+        this.birthDate = birthDate;
+        this.notes = notes;
+    }
 }
